@@ -1,0 +1,286 @@
+'=============xoa trung================
+Function ArrayRemoveDups(MyArray As Variant) As Variant
+    Dim nFirst As Long, nLast As Long, i As Long
+    Dim item As String
+    
+    Dim arrTemp() As String
+    Dim Coll As New Collection
+ 
+    'Get First and Last Array Positions
+    nFirst = LBound(MyArray)
+    nLast = UBound(MyArray)
+    ReDim arrTemp(nFirst To nLast)
+ 
+    'Convert Array to String
+    For i = nFirst To nLast
+        arrTemp(i) = CStr(MyArray(i))
+    Next i
+    
+    'Populate Temporary Collection
+    On Error Resume Next
+    For i = nFirst To nLast
+        Coll.Add arrTemp(i), arrTemp(i)
+    Next i
+    Err.Clear
+    On Error GoTo 0
+ 
+    'Resize Array
+    nLast = Coll.Count + nFirst - 1
+    ReDim arrTemp(nFirst To nLast)
+    
+    'Populate Array
+    For i = nFirst To nLast
+        arrTemp(i) = Coll(i - nFirst + 1)
+    Next i
+    
+    'Output Array
+    ArrayRemoveDups = arrTemp
+ 
+End Function
+ 
+
+Sub renoveDup()
+    Dim i As Integer
+    Dim r As Integer
+    Dim s() As String
+    Dim iInstr As Byte
+    r = Cells(Rows.Count, 1).End(xlUp).Row
+    For i = 1 To r
+        If IsEmpty(Range("B" & i)) = False Then
+            s = Split(Range("B" & i), ", ")
+            s = ArrayRemoveDups(s)
+            Range("C" & i) = Join(s, ", ")
+        End If
+    Next i
+    MsgBox "OK", vbInformation
+End Sub
+
+'========phan phoi ViDu==================
+Sub ViDu_Kanji()
+    Dim i As Integer
+    Dim r As Integer
+    Dim j As Integer
+    Dim rSrc As Integer
+    With Sheets("anki")
+        r = .Cells(Rows.Count, 1).End(xlUp).Row
+        For i = 1 To r
+            For j = 1 To Len(.Range("A" & i))
+                For rSrc = 1 To 2136
+                    If Mid(.Range("A" & i), j, 1) = Range("B" & rSrc) Then
+                        If InStr(1, Range("C" & rSrc), .Range("A" & i)) = 0 Then
+                            Range("C" & rSrc) = "。" & .Range("A" & i) & ";" & Range("C" & rSrc)
+                        End If
+                    End If
+                Next rSrc
+            Next j
+        Next i
+    End With
+    MsgBox "OK", vbInformation
+End Sub
+'============thay the Han Tu=========
+Sub KunReplace()
+    Dim i As Integer
+    Dim r As Integer
+    Dim s() As String
+    Dim iInstr As Byte
+    r = Cells(Rows.Count, 1).End(xlUp).Row
+    For i = 1 To r
+        If IsEmpty(Range("C" & i)) = False Then
+            s = Split(Range("C" & i), ";")
+            For Each j In s
+                iInstr = InStr(1, j, ".")
+                If iInstr = 0 Then
+                    Range("D" & i) = Range("D" & i) & ";" & Range("B" & i)
+                Else
+                    Range("D" & i) = Range("D" & i) & ";" & Range("B" & i) & Right(j, Len(j) - iInstr)
+                End If
+            Next j
+        End If
+    Next i
+    MsgBox "OK", vbInformation
+End Sub
+'====================================
+Sub chk_Rows()
+    Dim i As Integer
+    Dim r As Integer
+    r = Cells(Rows.Count, 1).End(xlUp).Row
+    For i = 4 To r Step 4
+        If IsEmpty(Range("A" & i)) = False Then
+            Rows(i - 4).Copy
+            Rows(i).Insert
+        End If
+    Next i
+    MsgBox "OK", vbInformation
+End Sub
+
+Sub onlyone()
+    Dim i As Integer
+    Dim r As Integer
+    Dim st As String
+    r = Cells(Rows.Count, 1).End(xlUp).Row
+    For i = 1 To r Step 4
+        
+''        Range("B" & i).UnMerge
+''        st = Range("B" & i).Value
+''        Range("E" & i).Value = Trim(Right(st, 2))
+''        Range("B" & i).Value = Trim(Left(st, Len(st) - 2))
+'        Range("B" & i & ":D" & i).Merge
+'-----KHUNG TRAI--------
+        'Range("A" & i).Select
+'        st = Range("A" & i + 2).Value
+'        Range("B" & i + 1).UnMerge
+'        Range("A" & i + 2).Value = Trim(Left(st, InStr(st, vbLf) - 1))
+'        Range("B" & i + 2).Value = Trim(Right(st, Len(st) - InStr(st, vbLf)))
+'        Range("C" & i).Cut Range("C" & i + 2)
+'        Range("B" & i & ":C" & i).Merge
+'        Range("B" & i + 1 & ":C" & i + 1).Merge
+        
+'        Range("E" & i + 1 & ":E" & i + 2).Merge
+'        Range("E" & i + 1).Formula = "=A" & i
+'        Range("A" & i).Font.Name = "KanjiStrokeOrders" '"HGPKyokashotai"
+'        Range("B" & i & ":C" & i + 1).Font.Name = "HGPGothicM"
+'        Range("E" & i + 1).Font.Size = 60
+        'Range("A" & i + 3).Font.Bold = True
+'        Range("A" & i + 2).Font.Size = 16
+'        Range("A" & i).Font.Size = 62
+'        Range("B" & i).Font.Size = 12
+        'Range("B" & i + 1 & ":C" & i + 2).Font.Size = 10
+        
+'        Range("B" & i & ":C" & i + 1).HorizontalAlignment = xlHAlignLeft
+'        Range("B" & i & ":C" & i + 1).VerticalAlignment = xlVAlignTop
+'        Range("A" & i & ":C" & i + 2).Borders.LineStyle = xlContinuous
+'        Range("A" & i & ":C" & i + 2).BorderAround xlContinuous, xlMedium
+'-----KHUNG PHAI--------
+'        Range("E" & i).Select
+'        st = Range("E" & i + 2).Value
+'        Range("F" & i + 1).UnMerge
+'        Range("E" & i + 2).Value = Trim(Left(st, InStr(st, vbLf) - 1))
+'        Range("F" & i + 2).Value = Trim(Right(st, Len(st) - InStr(st, vbLf)))
+'        Range("G" & i).Cut Range("G" & i + 2)
+'        Range("F" & i & ":G" & i).Merge
+'        Range("F" & i + 1 & ":G" & i + 1).Merge
+        
+'        Range("E" & i + 1 & ":E" & i + 2).Merge
+'        Range("E" & i + 1).Formula = "=A" & i
+'        Range("E" & i).Font.Name = "KanjiStrokeOrders" '"HGPKyokashotai"
+'        Range("F" & i & ":G" & i + 1).Font.Name = "HGPGothicM"
+'        Range("E" & i + 1).Font.Size = 60
+        'Range("A" & i + 3).Font.Bold = True
+'        Range("E" & i + 2).Font.Size = 16
+'        Range("E" & i).Font.Size = 62
+        'Range("F" & i).Font.Size = 12
+        'Range("F" & i + 1 & ":G" & i + 2).Font.Size = 10
+        
+'        Range("F" & i & ":G" & i + 1).HorizontalAlignment = xlHAlignLeft
+'        Range("F" & i & ":G" & i + 1).VerticalAlignment = xlVAlignTop
+'        Range("E" & i & ":G" & i + 2).Borders.LineStyle = xlContinuous
+'        Range("E" & i & ":G" & i + 2).BorderAround xlContinuous, xlMedium
+'----------XU LY CHUNG 2 KHUNG ----------
+'        Range("A" & i + 2 & ":G" & i + 2).HorizontalAlignment = xlHAlignCenter
+'        Range("A" & i + 2 & ":G" & i + 2).VerticalAlignment = xlVAlignCenter
+'        Range("B" & i + 2).HorizontalAlignment = xlHAlignLeft
+'        Range("F" & i + 2).HorizontalAlignment = xlHAlignLeft
+'        Rows(i).RowHeight = 32
+'        Rows(i + 1).RowHeight = 52
+'        Rows(i + 2).RowHeight = 26
+'        Rows(i + 3).RowHeight = 5
+''        Range("H" & i).UnMerge
+''        st = Range("H" & i).Value
+''        Range("K" & i).Value = Trim(Right(st, 2))
+''        Range("H" & i).Value = Trim(Left(st, Len(st) - 2))
+'        Range("h" & i & ":J" & i).Merge
+'        Range("H" & i).Value = Range("A" & i).Value
+''        Range("I" & i).Value = Range("C" & i + 2).Value
+'        Range("J" & i).Value = Range("A" & i + 2).Value
+''        Range("K" & i).Value = Range("B" & i).Value
+''        Range("L" & i).Value = Range("B" & i + 1).Value
+'        Range("H" & i + 1).Value = Range("E" & i).Value
+''        Range("I" & i + 1).Value = Range("G" & i + 2).Value
+'        Range("J" & i + 1).Value = Range("E" & i + 2).Value
+''        Range("K" & i + 1).Value = Range("F" & i).Value
+''        Range("L" & i + 1).Value = Range("F" & i + 1).Value
+'        'If Len(Range("B" & i + 2).Value) > 14 Then
+'            Range("I" & i).Value = Range("B" & i + 2).Value
+'        'End If
+'        'If Len(Range("F" & i + 2).Value) > 14 Then
+'            Range("I" & i + 1).Value = Range("F" & i + 2).Value
+'        'End If
+    Next i
+    MsgBox "OK", vbInformation
+End Sub
+
+Sub ins_data_A4()
+    Dim i As Integer
+    i = 1
+    For r = 2 To 2180
+        Range(i & ":" & i + 3).Copy
+        Rows(i).Insert
+        '------------------
+        If Sheets("2136").Range("C" & r) = "" Then
+            r = r + 1
+        Else
+            Range("A" & i).Value = Sheets("2136").Range("C" & r)
+            Range("A" & i + 1).Value = Sheets("2136").Range("D" & r)
+            Range("A" & i + 2).Value = Sheets("2136").Range("E" & r)
+            Range("B" & i).Value = _
+            Sheets("2136").Range("F" & r) & IIf(Sheets("2136").Range("F" & r) <> "" And Sheets("2136").Range("G" & r) <> "", vbNewLine & vbNewLine, "") & Sheets("2136").Range("G" & r)
+            Range("C" & i + 1).Value = Sheets("2136").Range("K" & r)
+            Range("C" & i + 2).Value = Sheets("2136").Range("A" & r)
+            r = r + 1
+        End If
+        '------------------
+        If Sheets("2136").Range("C" & r) = "" Then
+            r = r + 1
+        Else
+            Range("E" & i).Value = Sheets("2136").Range("C" & r)
+            Range("E" & i + 1).Value = Sheets("2136").Range("D" & r)
+            Range("E" & i + 2).Value = Sheets("2136").Range("E" & r)
+            Range("F" & i).Value = _
+            Sheets("2136").Range("F" & r) & IIf(Sheets("2136").Range("F" & r) <> "" And Sheets("2136").Range("G" & r) <> "", vbNewLine & vbNewLine, "") & Sheets("2136").Range("G" & r)
+            Range("G" & i + 1).Value = Sheets("2136").Range("K" & r)
+            Range("G" & i + 2).Value = Sheets("2136").Range("A" & r)
+        End If
+        '------------------
+        i = i + 4
+    Next r
+    Range(i & ":" & i + 3).Delete
+End Sub
+
+Sub ins_data_A3()
+    Dim i As Integer
+    Dim cl As Integer
+    i = 1
+    cl = 82 '28 cot * 3 o = 84
+    For r = 2 To 2180
+        If cl = 82 Then
+            cl = 1
+            Range(i & ":" & i + 3).Copy
+            Rows(i).Insert
+        Else
+            cl = cl + 3
+        End If
+        '------------------
+        If Sheets("2136").Range("C" & r) = "" Then
+            Range(Cells(i, cl), Cells(i + 3, cl + 2)).Merge
+            Range(Cells(i, cl), Cells(i + 3, cl + 2)) = Sheets("2136").Range("F" & r)
+            'Range(Cells(i, cl), Cells(i + 3, cl + 2)).Font.Name = "Arial"
+            Range(Cells(i, cl), Cells(i + 3, cl + 2)).Font.Size = 30
+            Range(Cells(i, cl), Cells(i + 3, cl + 2)).Font.Bold = True
+            Range(Cells(i, cl), Cells(i + 3, cl + 2)).HorizontalAlignment = xlHAlignCenter
+            Range(Cells(i, cl), Cells(i + 3, cl + 2)).VerticalAlignment = xlVAlignCenter
+        Else
+            Range(Cells(i, cl), Cells(i, cl)).Value = Sheets("2136").Range("A" & r)
+            Range(Cells(i, cl + 1), Cells(i, cl + 1)).Value = Sheets("2136").Range("K" & r)
+            Range(Cells(i + 1, cl), Cells(i + 1, cl)).Value = Sheets("2136").Range("C" & r)
+            Range(Cells(i + 2, cl), Cells(i + 2, cl)).Value = Sheets("2136").Range("D" & r)
+            Range(Cells(i + 3, cl), Cells(i + 3, cl)).Value = Sheets("2136").Range("E" & r)
+            Range(Cells(i, cl + 2), Cells(i, cl + 2)).Value = _
+            Sheets("2136").Range("F" & r) & IIf(Sheets("2136").Range("F" & r) <> "" And Sheets("2136").Range("G" & r) <> "", vbNewLine & vbNewLine, "") & Sheets("2136").Range("G" & r)
+        End If
+        '--------------
+        If cl = 82 Then i = i + 4
+    Next r
+    Range(i + 4 & ":" & i + 7).Delete
+'chinh tay cot cach doc_On dua vao len()
+End Sub
+
